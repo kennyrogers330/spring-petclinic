@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     tools {
-        maven 'maven3' 
+        maven 'maven3'
     }
     
     stages {
@@ -24,6 +24,20 @@ pipeline {
             steps {
                 sh 'mvn test'
                 echo 'Tests completed'
+            }
+        }
+        
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                    mvn sonar:sonar \
+                      -Dsonar.projectKey=spring-petclinic \
+                      -Dsonar.projectName='Spring Pet Clinic' \
+                      -Dsonar.java.binaries=target/classes
+                    '''
+                }
+                echo 'SonarQube analysis completed'
             }
         }
     }
